@@ -30,22 +30,21 @@ In accordance with the course rules (each member covers at least 3 areas, and ev
 
 ## 2. Project Overview
 
-Approximating *ab initio* Density Functional Theory (DFT) Potential Energy Surfaces (PES) using Machine Learning Interatomic Potentials (MLIPs) accelerates quantum-chemical property prediction by five orders of magnitude. Recent discussion on the 
+Approximating *ab initio* Density Functional Theory (DFT) Potential Energy Surfaces (PES) using Machine Learning Interatomic Potentials (MLIPs) accelerates quantum-chemical property prediction by five orders of magnitude.
 
-While first-generation invariant Graph Neural Networks (such as SchNet) rely solely on pairwise interatomic distances $d_{ij} = \|\mathbf{r}_i - \mathbf{r}_j\|_2$ and are blind to three-body bond angles $\theta_{jik}$ within a single hop, explicit triplet networks  suffer from $\mathcal{O}(N\bar{k}^2)$ complexity.
+While first-generation invariant Graph Neural Networks (such as SchNet) rely solely on pairwise interatomic distances $d_{ij} = \|\mathbf{r}_i - \mathbf{r}_j\|$ and are blind to explicit three-body bond-angle information $\theta_{jik}$ within a single message-passing hop, explicit triplet networks suffer from $\mathcal{O}(N\bar{k}^{2})$ computational complexity.
 
-This project implements a **Cartesian \(SO(3)\)-Equivariant Vector-Scalar Message Passing Neural Network** on the **QM9 benchmark dataset** (\(130{,}831\) characterized equilibrium organic molecules containing \(\text{H, C, N, O, F}\) with up to \(29\) atoms).
+This project implements a **Cartesian (SO(3))-Equivariant Vector-Scalar Message Passing Neural Network** on the **QM9 benchmark dataset** (130,831 equilibrium organic molecules containing H, C, N, O, and F, with up to 29 atoms).
 
-- **Coupled Vector-Scalar Hidden States:** Each atom maintains both rotation-invariant scalar channels (\(\mathbf{s}_i \in \mathbb{R}^{F}\)) and rotation-equivariant 3D Cartesian vector channels (\(\mathbf{v}_i \in \mathbb{R}^{F \times 3}\)). Contracting projected vector channels via Euclidean inner products,
-  \[
-  \left\langle \mathbf{U}_1 \mathbf{v}_i,\,
-  \mathbf{U}_2 \mathbf{v}_i \right\rangle_{\mathbb{R}^3},
-  \]
-  automatically recovers \(\cos(\theta_{jik})\) bond-angle geometry with strictly linear \(\mathcal{O}(N\bar{k})\) edge complexity.
+- **Coupled Vector-Scalar Hidden States:** Each atom maintains both rotation-invariant scalar channels ($\mathbf{s}_i \in \mathbb{R}^{F}$) and rotation-equivariant 3D Cartesian vector channels ($\mathbf{v}_i \in \mathbb{R}^{F \times 3}$). Contracting projected vector channels via Euclidean inner products,
 
-- **Leak-Free Empirical OLS Baseline (`Atomref`) Removal:** Instead of relying on external offset tables, we fit an Ordinary Least Squares (OLS) linear model on the training-set stoichiometry matrix (`torch.linalg.lstsq`), reducing the target \(U_0\) energy standard deviation from \(1{,}087.3\,\text{eV}\) to \(2.41\,\text{eV}\) (a \(450\times\) reduction).
+  $$\left\langle \mathbf{U}_1\mathbf{v}_i,\mathbf{U}_2\mathbf{v}_j\right\rangle_{\mathbb{R}^3}$$
 
-- **Sparse Size-Independent Disjoint-Graph Batching:** Zero-padding is completely avoided. Variable-sized molecules are collated into a block-diagonal sparse super-graph controlled by a dynamic atom-budget sampler (`MaxAtomsBatchSampler`), enabling seamless inference and training on macromolecules with \(N > 29\) atoms.
+  automatically recovers bond-angle geometry through angular information, with strictly linear $\mathcal{O}(N\bar{k})$ edge complexity.
+
+- **Leak-Free Empirical OLS Baseline (`Atomref`) Removal:** Instead of relying on external offset tables, we fit an Ordinary Least Squares (OLS) linear model on the training-set stoichiometry matrix using `torch.linalg.lstsq`. This reduces the target $U_0$ energy standard deviation from 1,087.3 eV to 2.41 eV, corresponding to a $450\times$ reduction.
+
+- **Sparse Size-Independent Disjoint-Graph Batching:** Zero-padding is completely avoided. Variable-sized molecules are collated into a block-diagonal sparse super-graph controlled by a dynamic atom-budget sampler (`MaxAtomsBatchSampler`), enabling seamless inference and training on macromolecules with $N > 29$ atoms.
 
 ---
 
