@@ -22,7 +22,7 @@ In accordance with the course rules (each member covers at least 3 areas, and ev
 | :--- | :---: | :---: | :---: |
 | **1. Literature Review & Quantum-Chemical Theory** | ✅ | ✅ | — |
 | **2. Data Acquisition, Cleaning & Equivariant Graph Preprocessing** | ✅ | — | ✅ |
-| **3. Neural Network Architecture & Training Pipeline** | ✅ | ✅ | — |
+| **3. Neural Network Architecture & Training Pipeline** | ✅ | ✅ | ✅ |
 | **4. Hyperparameter Optimization, Evaluation & Testing** | — | ✅ | ✅ |
 | **5. Interactive 3D Visualization / Interface Integration** | — | — | ✅ |
 
@@ -30,9 +30,11 @@ In accordance with the course rules (each member covers at least 3 areas, and ev
 
 ## 2. Project Overview
 
-Approximating *ab initio* Density Functional Theory (DFT) Potential Energy Surfaces (PES) using Machine Learning Interatomic Potentials (MLIPs) accelerates quantum-chemical property prediction by five orders of magnitude. While first-generation invariant Graph Neural Networks (such as SchNet) rely solely on pairwise interatomic distances $d_{ij} = \|\mathbf{r}_i - \mathbf{r}_j\|_2$ and are blind to three-body bond angles $\theta_{jik}$ within a single hop, explicit triplet networks (such as DimeNet) suffer from $\mathcal{O}(N\bar{k}^2)$ complexity.
+Approximating *ab initio* Density Functional Theory (DFT) Potential Energy Surfaces (PES) using Machine Learning Interatomic Potentials (MLIPs) accelerates quantum-chemical property prediction by five orders of magnitude. While computationally simple, distance-only invariant networks suffer from a fundamental geometric limitation: within a single message-passing hop, a central atom $i$ receiving scalar distances $d_{ij}$ and $d_{ik}$ from two neighbors $j$ and $k$ has zero information about the **bond angle** $\theta_{jik}$. Whether $\theta_{jik}$ is $90^\circ$, $109.5^\circ$ ($sp^3$ tetrahedral), or $180^\circ$ ($sp$ linear), the pairwise distances $d_{ij}$ and $d_{ik}$ remain identical. Directional information is central to empirical potentials through angular terms, and scalar hidden features, messages and distance-only edge information can limit expressive capacity and render atomic-structure representations incomplete, which are required for chemical accuracy. Recent discussion on E(3)-equivariant message passing neural networks  
 
-This project implements a from-scratch **Cartesian $SO(3)$-Equivariant Vector-Scalar Message Passing Neural Network** on the **QM9 benchmark dataset** ($130,831$ characterized equilibrium organic molecules containing $\text{H, C, N, O, F}$ with up to $29$ atoms).
+For a more in-depth description of the probles see ref. [14] section IIIc.
+
+This project implements a **Cartesian $SO(3)$-Equivariant Vector-Scalar Message Passing Neural Network** on the **QM9 benchmark dataset** ($130,831$ characterized equilibrium organic molecules containing $\text{H, C, N, O, F}$ with up to $29$ atoms).
 * **Coupled Vector-Scalar Hidden States:** Each atom maintains both rotation-invariant scalar channels ($\mathbf{s}_i \in \mathbb{R}^{F}$) and rotation-equivariant 3D Cartesian vector channels ($\vec{\mathbf{v}}_i \in \mathbb{R}^{F \times 3}$). Contracting projected vector channels via Euclidean inner products ($\langle \mathbf{U}_1 \vec{\mathbf{v}}_i, \mathbf{U}_2 \vec{\mathbf{v}}_i \rangle_{\mathbb{R}^3}$) automatically recovers $\cos(\theta_{jik})$ bond-angle geometry in strictly linear $\mathcal{O}(N\bar{k})$ edge complexity.
 * **Leak-Free Empirical OLS Baseline (`Atomref`) Removal:** Instead of relying on external offset tables, we fit an Ordinary Least Squares (OLS) linear model on the training set stoichiometry matrix (`torch.linalg.lstsq`), reducing the target $U_0$ energy standard deviation from $1,087.3\text{ eV}$ to $2.41\text{ eV}$ ($450\times$ reduction).
 * **Sparse Size-Independent Disjoint-Graph Batching:** Zero-padding is completely avoided. Variable-sized molecules are collated into a block-diagonal sparse super-graph controlled by a dynamic atom-budget sampler (`MaxAtomsBatchSampler`), enabling seamless inference and training on macromolecules with $N > 29$ atoms.
