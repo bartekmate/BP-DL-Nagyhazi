@@ -48,7 +48,7 @@ This project implements a **Cartesian (SO(3))-Equivariant Vector-Scalar Message 
 
 | File Name | Description |
 | :--- | :--- |
-| `milestone1_qm9_equivariant_mlip.ipynb` | **Main Milestone 1 Jupyter Notebook.** Contains the scientific introduction, automated QM9 download and cleaning script, 10-panel Exploratory Data Analysis (EDA) and 3D molecular visualizations, leak-free 80/10/10 splitting with OLS baseline fitting, custom $SO(3)$-equivariant directional graph builder, sparse disjoint-graph `DataLoader` pipelines, and $SO(3)$ symmetry + macromolecular ($N=150$) verification tests. |
+| `milestone1_qm9_equivariant_mlip.ipynb` | Main self-contained Jupyter Notebook containing the theoretical introduction, automated QM9 download, 3 multi-panel EDA/geometric figures, leak-free OLS `atomref` solver (`float64`), sparse `DataLoader` pipeline, single-precision $SO(3)$ equivariance check (`< 1e-5`), and 150-atom sparse pipeline/prototype verification. |
 | `beszamolo.tex` / `beszamolo.pdf` | **Academic Project Report (Work in progress).** Formatted in two-column IEEE/NeurIPS academic style, containing the complete English report followed by the complete Hungarian translation. |
 | `README.md` | **Repository Documentation.** This document. Team details, architectural summary, file index, and reproduction instructions etc. |
 
