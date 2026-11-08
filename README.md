@@ -72,5 +72,5 @@ jupyter notebook milestone1_qm9_equivariant_mlip.ipynb
 ### Reproducibility Parameters
 * **Random Seed:** `SEED = 42` (enforced across `random`, `numpy`, and `torch`).
 * **Dataset Partition:** `80%` Training ($104,664$ molecules), `10%` Validation ($13,083$ molecules), `10%` Test ($13,084$ molecules), excluding the $3,054$ uncharacterized GDB-9 geometries.
-* **Spatial Cutoff Radius:** $r_c = \(5.0\,\text{\AA}\) with $K = 20$ smooth Gaussian Radial Basis Functions and a cosine cutoff envelope.
+* **Spatial Cutoff Radius:** $r_c = 5.0 Å with $K = 20$ smooth Gaussian Radial Basis Functions and a cosine cutoff envelope.
 * **Dynamic Batching Budget:** `max_atoms = 1800`, `max_molecules = 100`.
